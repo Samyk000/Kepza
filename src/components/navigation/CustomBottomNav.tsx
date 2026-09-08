@@ -74,6 +74,7 @@ const NavTabItem: React.FC<NavTabItemProps> = ({
     >
       <View style={styles.tabPill}>
         <Animated.View
+          pointerEvents="none"
           style={[
             styles.tabPillBg,
             {
@@ -83,7 +84,9 @@ const NavTabItem: React.FC<NavTabItemProps> = ({
             },
           ]}
         />
-        {isActive ? activeIcon : icon}
+        <View style={styles.tabIconWrapper} pointerEvents="none">
+          {isActive ? activeIcon : icon}
+        </View>
         {badge && <View style={styles.redDot} />}
       </View>
 
@@ -92,7 +95,7 @@ const NavTabItem: React.FC<NavTabItemProps> = ({
           TYPOGRAPHY.caption,
           styles.tabLabel,
           {
-            color: isActive ? themeColors.text : themeColors.textMuted,
+            color: isActive ? (isDark ? accent.primary : accent.deep) : themeColors.textMuted,
             fontWeight: isActive ? '700' : '500',
           },
         ]}
@@ -122,7 +125,7 @@ export const CustomBottomNav: React.FC<BottomTabBarProps> = ({
     openAddModal();
   };
 
-  const activeColor = isDark ? accent.primary : '#0F172A';
+  const activeColor = isDark ? accent.primary : accent.deep;
   const inactiveColor = themeColors.textSecondary;
 
   return (
@@ -143,7 +146,7 @@ export const CustomBottomNav: React.FC<BottomTabBarProps> = ({
           isActive={currentRouteName === 'index'}
           onPress={() => handleTabPress('index')}
           icon={<Home size={20} color={inactiveColor} />}
-          activeIcon={<Home size={20} color={activeColor} />}
+          activeIcon={<Home size={20} color={activeColor} strokeWidth={2.4} />}
         />
 
         <NavTabItem
@@ -152,7 +155,7 @@ export const CustomBottomNav: React.FC<BottomTabBarProps> = ({
           isActive={currentRouteName === 'inbox'}
           onPress={() => handleTabPress('inbox')}
           icon={<Inbox size={20} color={inactiveColor} />}
-          activeIcon={<Inbox size={20} color={activeColor} />}
+          activeIcon={<Inbox size={20} color={activeColor} strokeWidth={2.4} />}
           badge={true}
         />
 
@@ -172,7 +175,7 @@ export const CustomBottomNav: React.FC<BottomTabBarProps> = ({
           isActive={currentRouteName === 'find'}
           onPress={() => handleTabPress('find')}
           icon={<Search size={20} color={inactiveColor} />}
-          activeIcon={<Search size={20} color={activeColor} />}
+          activeIcon={<Search size={20} color={activeColor} strokeWidth={2.4} />}
         />
 
         <NavTabItem
@@ -181,7 +184,7 @@ export const CustomBottomNav: React.FC<BottomTabBarProps> = ({
           isActive={currentRouteName === 'library'}
           onPress={() => handleTabPress('library')}
           icon={<Folder size={20} color={inactiveColor} />}
-          activeIcon={<Folder size={20} color={activeColor} />}
+          activeIcon={<Folder size={20} color={activeColor} strokeWidth={2.4} />}
         />
       </View>
     </View>
@@ -229,6 +232,13 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     borderRadius: 16,
+    zIndex: 0,
+  },
+  tabIconWrapper: {
+    zIndex: 2,
+    elevation: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   redDot: {
     position: 'absolute',
@@ -238,6 +248,8 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: '#EF4444',
+    zIndex: 3,
+    elevation: 3,
   },
   tabLabel: {
     fontSize: 11,

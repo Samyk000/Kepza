@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   LayoutAnimation,
+  Image,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,11 +20,11 @@ import {
   Video,
   Pin,
   Plus,
+  Bookmark,
 } from 'lucide-react-native';
 import { HeaderBar } from '../../src/components/ui/HeaderBar';
 import { SearchBar } from '../../src/components/ui/SearchBar';
 import { LinkCard } from '../../src/components/links/LinkCard';
-import { HomeArtisticHero } from '../../src/components/home/HomeArtisticHero';
 import { getAllLinks } from '../../src/db/queries/links';
 import { Link } from '../../src/types/link';
 import { RADIUS, SHADOWS, SPACING } from '../../src/theme/tokens';
@@ -134,8 +135,29 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={accent.primary} />
         }
       >
-        {/* Artistic SVG Visual Banner */}
-        <HomeArtisticHero />
+        {/* Artistic Illustrated Hero Banner */}
+        <View style={styles.heroBannerWrapper}>
+          <View
+            style={[
+              styles.heroBannerContainer,
+              {
+                backgroundColor: isDark ? '#0C101B' : '#FFFDF8',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
+              },
+              SHADOWS.card,
+            ]}
+          >
+            <Image
+              source={
+                isDark
+                  ? require('../../assets/HeroDark.png')
+                  : require('../../assets/HeroLight.png')
+              }
+              style={styles.heroBannerImage}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
 
         {/* In-Place Real-Time Search Bar */}
         <SearchBar
@@ -177,7 +199,7 @@ export default function HomeScreen() {
               >
                 {Icon && (
                   <Icon
-                    size={14}
+                    size={13}
                     color={isActive ? (isDark ? '#0F172A' : '#FFFFFF') : themeColors.textSecondary}
                     style={{ marginRight: 5 }}
                   />
@@ -200,14 +222,37 @@ export default function HomeScreen() {
           })}
         </ScrollView>
 
-        {/* Section Header: Link count & View Toggle */}
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionTitleRow}>
-            <Text style={[TYPOGRAPHY.title2, { color: themeColors.text }]}>
-              {searchQuery.trim() ? `Search Results` : 'All Links'}
+        {/* Controls Sub-Bar: Filter/Search Title + Live Count Badge + View Mode Toggle */}
+        <View style={styles.controlsRow}>
+          <View style={styles.controlsTitleRow}>
+            <Text style={[TYPOGRAPHY.title3, styles.controlsSectionTitle, { color: themeColors.text }]}>
+              {searchQuery.trim()
+                ? 'Search Results'
+                : activeFilter === 'all'
+                ? 'All Links'
+                : activeFilter === 'pinned'
+                ? 'Pinned'
+                : activeFilter === 'article'
+                ? 'Articles'
+                : activeFilter === 'video'
+                ? 'Videos'
+                : 'Inbox'}
             </Text>
-            <View style={[styles.countBadge, { backgroundColor: themeColors.cardSecondary }]}>
-              <Text style={[styles.countBadgeText, { color: themeColors.textSecondary }]}>
+            <View
+              style={[
+                styles.nativeCountPill,
+                {
+                  backgroundColor: isDark ? `${accent.primary}25` : accent.light,
+                  borderColor: isDark ? `${accent.primary}45` : accent.border,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.nativeCountText,
+                  { color: isDark ? accent.primary : accent.deep },
+                ]}
+              >
                 {filteredLinks.length}
               </Text>
             </View>
@@ -215,13 +260,16 @@ export default function HomeScreen() {
 
           <TouchableOpacity
             onPress={toggleViewMode}
-            style={[styles.viewToggleBtn, { backgroundColor: themeColors.cardSecondary, borderColor: themeColors.border }]}
+            style={[
+              styles.viewToggleBtn,
+              { backgroundColor: themeColors.cardSecondary, borderColor: themeColors.border },
+            ]}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             {viewMode === 'list' ? (
-              <LayoutGrid size={18} color={themeColors.text} />
+              <LayoutGrid size={16} color={themeColors.text} />
             ) : (
-              <ListIcon size={18} color={themeColors.text} />
+              <ListIcon size={16} color={themeColors.text} />
             )}
           </TouchableOpacity>
         </View>
@@ -241,18 +289,18 @@ export default function HomeScreen() {
             ))}
           </View>
         ) : (
-          /* Clean Empty State */
+          /* Composed Native Empty State */
           <View style={[styles.emptyCard, { backgroundColor: themeColors.card, borderColor: themeColors.border }, SHADOWS.card]}>
             <View style={[styles.emptyIconCircle, { backgroundColor: isDark ? `${accent.primary}20` : accent.light }]}>
-              <Sparkles size={28} color={isDark ? accent.primary : '#0F172A'} />
+              <Bookmark size={26} color={isDark ? accent.primary : accent.deep} />
             </View>
             <Text style={[TYPOGRAPHY.title3, { color: themeColors.text, marginTop: 14 }]}>
               {searchQuery.trim() ? 'No matching links found' : 'No links saved yet'}
             </Text>
-            <Text style={[TYPOGRAPHY.body, { color: themeColors.textSecondary, textAlign: 'center', marginTop: 4, paddingHorizontal: 20 }]}>
+            <Text style={[TYPOGRAPHY.body, { color: themeColors.textSecondary, textAlign: 'center', marginTop: 6, paddingHorizontal: 20, lineHeight: 20 }]}>
               {searchQuery.trim()
                 ? `No results matching "${searchQuery}". Try a different keyword.`
-                : 'Tap the + button to save your first link, article, or video.'}
+                : 'Tap the + button below to save your first article, video, or inspiration.'}
             </Text>
             {!searchQuery.trim() && (
               <TouchableOpacity
@@ -280,33 +328,59 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 110,
   },
-  heroContainer: {
+  heroBannerWrapper: {
     paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.xs,
-  },
-  heroTitle: {
-    letterSpacing: -0.8,
-  },
-  heroHighlight: {
-    borderRadius: 6,
-    paddingHorizontal: 4,
-    overflow: 'hidden',
-  },
-  heroSubtitle: {
+    width: '100%',
+    alignItems: 'center',
     marginTop: SPACING.xs,
-    fontSize: 14,
+    marginBottom: SPACING.xs,
+  },
+  heroBannerContainer: {
+    width: '100%',
+    maxWidth: 520,
+    aspectRatio: 2048 / 768,
+    borderRadius: RADIUS.xl,
+    borderCurve: 'continuous',
+    borderWidth: 1,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroBannerImage: {
+    width: '100%',
+    height: '100%',
   },
   searchBar: {
     marginHorizontal: SPACING.lg,
-    marginTop: SPACING.md,
-    marginBottom: SPACING.sm,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+  controlsTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  controlsSectionTitle: {
+    fontWeight: '700',
+    letterSpacing: -0.4,
+  },
+  nativeCountPill: {
+    paddingHorizontal: 9,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+    borderWidth: 1,
+    borderCurve: 'continuous',
+  },
+  nativeCountText: {
+    fontSize: 12,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
   filterRow: {
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.xs,
-    gap: SPACING.xs + 2,
-    marginBottom: SPACING.sm,
+    gap: 8,
+    marginBottom: SPACING.xs,
   },
   filterPill: {
     flexDirection: 'row',
@@ -315,11 +389,12 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: RADIUS.full,
     borderWidth: 1,
+    borderCurve: 'continuous',
   },
   filterPillText: {
     fontSize: 13,
   },
-  sectionHeader: {
+  controlsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -327,25 +402,18 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     marginBottom: SPACING.sm,
   },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  countBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: RADIUS.full,
-  },
-  countBadgeText: {
+  controlsLabel: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   viewToggleBtn: {
     width: 36,
     height: 36,
     borderRadius: RADIUS.full,
     borderWidth: 1,
+    borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
   },

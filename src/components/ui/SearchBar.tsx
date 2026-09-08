@@ -51,7 +51,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         style,
       ]}
     >
-      <Search size={20} color={themeColors.textSecondary} style={styles.searchIcon} />
+      <Search size={18} color={themeColors.textSecondary} style={styles.searchIcon} />
 
       {isReadOnly ? (
         <View style={styles.inputWrapper}>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
+    height: 42,
     borderRadius: RADIUS.full,
     borderWidth: 1,
     paddingHorizontal: SPACING.md,
