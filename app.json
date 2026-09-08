@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Kepza",
+    "slug": "kepza",
+    "version": "1.0.0",
+    "scheme": "kepza",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-web-browser",
+      "expo-sharing"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kepza.app"
+    },
+    "android": {
+      "package": "com.kepza.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFBEB",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
