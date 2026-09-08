@@ -34,8 +34,10 @@ Thumbs.db
 .agents/
 .gemini/
 
-# Strictly exclude all Markdown files per user instructions
+# Strictly exclude all Markdown files per user instructions (except project README)
 *.md
 **/*.md
 *.MD
 **/*.MD
+!README.md
+
